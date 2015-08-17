@@ -1,3 +1,4 @@
+var url   = require('url');
 var OAuth = require('oauth').OAuth;
 var FACTUAL_API_BASE_URI = 'http://api.v3.factual.com';
 
@@ -7,12 +8,21 @@ var customHeaders = {
   "User-Agent": "Node authentication",
 };
 
-var FactualApiServer = function(config) {
+function stripTrailingSlash(path) {
+  if (typeof path !== 'string') return null;
+  if (path[path.length - 1] === '/') {
+    path = path.slice(0, -1);
+  } 
+  return path;
+}
+
+var FactualApiServer = function(key, secret, mountPoint) {
+  this.mountPoint = stripTrailingSlash(mountPoint) || '/';
   this.oauth = new OAuth(
     null, 
     null, 
-    config.key, 
-    config.secret, 
+    key, 
+    secret, 
     '1.0', 
     null, 
     'HMAC-SHA1', 
@@ -21,12 +31,29 @@ var FactualApiServer = function(config) {
 };
 
 FactualApiServer.prototype.middleware = function() {
+  var mountPoint = this.mountPoint.toLowerCase();
+
   return function(req, res, next) {
-    var factualReqUrl = FACTUAL_API_BASE_URI + req.url;
+    var factualReqUrl;
+    var parsed = url.parse(req.url);
+
+    if(mountPoint !== '/') {
+      var path  = parsed.pathname || '/';
+      if (path !== '/') path = stripTrailingSlash(path).toLowerCase();
+      if (path.substr(0, mountPoint.length) !== mountPoint) {
+        return (typeof next === 'function') ? next() : null;
+      }
+      factualReqUrl = FACTUAL_API_BASE_URI + path.toLowerCase().substr(mountPoint.length);
+    } else {
+      factualReqUrl = FACTUAL_API_BASE_URI + req.url;
+    }
+    factualReqUrl += ('?' + parsed.query);
+
     this.oauth.get(factualReqUrl, null, null, function(err, data, resp) {
       if(err) return res.end(JSON.stringify(err));
       res.writeHead(200, {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
       });
       res.end(data);
     });
