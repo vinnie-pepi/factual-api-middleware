@@ -1,0 +1,13 @@
+{
+  "name": "factual-api-server",
+  "version": "0.0.1",
+  "description": "node server for handling factual api requests",
+  "main": "index.js",
+  "dependencies": {
+    "oauth": "^0.9.13"
+  },
+  "devDependencies": {},
+  "scripts": {},
+  "author": "vinnie-pepi@github",
+  "license": "ISC"
+}
