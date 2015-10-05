@@ -16,8 +16,11 @@ function stripTrailingSlash(path) {
   return path;
 }
 
-var FactualApiServer = function(key, secret, mountPoint) {
+var FactualApiServer = function(key, secret, mountPoint, options) {
+  var options = options || {};
+  this.responseHeaders = options.responseHeaders || null;
   this.mountPoint = stripTrailingSlash(mountPoint) || '/';
+
   this.oauth = new OAuth(
     null, 
     null, 
@@ -30,6 +33,12 @@ var FactualApiServer = function(key, secret, mountPoint) {
     customHeaders);
 };
 
+FactualApiServer.prototype.setHeaders = function(res) {
+  for (var header in this.responseHeaders) {
+    res.setHeader(header, this.responseHeaders[header]);
+  }
+};
+
 FactualApiServer.prototype.middleware = function() {
   var mountPoint = this.mountPoint.toLowerCase();
 
@@ -37,6 +46,7 @@ FactualApiServer.prototype.middleware = function() {
     var factualReqUrl;
     var parsed = url.parse(req.url);
 
+    if(this.responseHeaders) this.setHeaders(res);
     if(mountPoint !== '/') {
       var path  = parsed.pathname || '/';
       if (path !== '/') path = stripTrailingSlash(path).toLowerCase();
