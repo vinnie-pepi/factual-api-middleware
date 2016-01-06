@@ -39,10 +39,10 @@ FactualApiServer.prototype.setHeaders = function(res) {
   }
 };
 
-FactualApiServer.prototype.middleware = function() {
+FactualApiServer.prototype.middleware = function(next) {
   var mountPoint = this.mountPoint.toLowerCase();
 
-  return function(req, res, next) {
+  return function(req, res) {
     var factualReqUrl;
     var parsed = url.parse(req.url);
 
@@ -51,7 +51,7 @@ FactualApiServer.prototype.middleware = function() {
       var path  = parsed.pathname || '/';
       if (path !== '/') path = stripTrailingSlash(path).toLowerCase();
       if (path.substr(0, mountPoint.length) !== mountPoint) {
-        return (typeof next === 'function') ? next() : null;
+        return (typeof next === 'function') ? next(req, res) : null;
       }
       factualReqUrl = FACTUAL_API_BASE_URI + path.toLowerCase().substr(mountPoint.length);
     } else {
