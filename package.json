@@ -1,7 +1,7 @@
 {
-  "name": "factual-api-server",
+  "name": "factual-api-middleware",
   "version": "0.0.1",
-  "description": "node server for handling factual api requests",
+  "description": "node middleware for handling factual api requests",
   "main": "index.js",
   "dependencies": {
     "oauth": "^0.9.13"

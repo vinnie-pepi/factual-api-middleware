@@ -6,11 +6,13 @@ Very simple middleware for the factual api. Hides your factual api key and secre
 
 ```
 var http = require('http');
-var FactualApiServer = require('factual-api-server');
+var FactualMiddleware = require('factual-api-middleware');
 
-var FactualApiServer = new FactualApiServer([ KEY ], [ SECRET ], [ MOUNTPOINT ]);
-var factualMiddleware = FactualApiServer.middleware();
-var server = http.createServer(factualMiddleware);
+var factualMiddleware = new FactualMiddleware([ KEY ], [ SECRET ], [ MOUNTPOINT ]);
+var server = http.createServer(factualMiddleware.middleware());
 srv.listen(3000);
 ```
+
+* mountpoint is a string like '/api'
+* you can pass a next function to the middleware function
 

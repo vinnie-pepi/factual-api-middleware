@@ -52,7 +52,7 @@ FactualApiServer.prototype.middleware = function(nextFn) {
       var path  = parsed.pathname || '/';
       if (path !== '/') path = stripTrailingSlash(path).toLowerCase();
       if (path.substr(0, mountPoint.length) !== mountPoint) {
-        return (typeof next === 'function') ? next(req, res) : null;
+        return (typeof next === 'function') ? next() : null;
       }
       factualReqUrl = FACTUAL_API_BASE_URI + path.toLowerCase().substr(mountPoint.length);
     } else {
