@@ -39,10 +39,11 @@ FactualApiServer.prototype.setHeaders = function(res) {
   }
 };
 
-FactualApiServer.prototype.middleware = function(next) {
+FactualApiServer.prototype.middleware = function(nextFn) {
   var mountPoint = this.mountPoint.toLowerCase();
 
-  return function(req, res) {
+  return function(req, res, next) {
+    next = next || nextFn;
     var factualReqUrl;
     var parsed = url.parse(req.url);
 
